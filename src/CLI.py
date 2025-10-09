@@ -8,6 +8,9 @@ import click
 from calculator import add, subtract, multiply, divide, power, square_root
 
 
+# Operations that require two numbers
+TWO_OPERAND_OPS = {"add", "subtract", "multiply", "divide", "power"}
+
 @click.command()
 @click.argument("operation")
 @click.argument("numbers", type=float, nargs=-1)  # Accept 1 or 2 numbers
@@ -15,33 +18,27 @@ def calculate(operation, numbers):
     """Simple calculator CLI"""
 
     try:
-        # Extract numbers
         if len(numbers) == 0:
             click.echo("Error: You must provide at least one number")
             sys.exit(1)
+
         num1 = numbers[0]
         num2 = numbers[1] if len(numbers) > 1 else None
 
-        # Perform operation
+        # Check if operation requires two numbers
+        if operation in TWO_OPERAND_OPS and num2 is None:
+            raise ValueError(f"{operation.capitalize()} operation requires two numbers")
+
+        # Perform the requested operation
         if operation == "add":
-            if num2 is None:
-                raise ValueError("Addition requires two numbers")
             result = add(num1, num2)
         elif operation == "subtract":
-            if num2 is None:
-                raise ValueError("Subtraction requires two numbers")
             result = subtract(num1, num2)
         elif operation == "multiply":
-            if num2 is None:
-                raise ValueError("Multiplication requires two numbers")
             result = multiply(num1, num2)
         elif operation == "divide":
-            if num2 is None:
-                raise ValueError("Division requires two numbers")
             result = divide(num1, num2)
         elif operation == "power":
-            if num2 is None:
-                raise ValueError("Power operation requires two numbers")
             result = power(num1, num2)
         elif operation == "square_root":
             result = square_root(num1)
@@ -49,7 +46,7 @@ def calculate(operation, numbers):
             click.echo(f"Unknown operation: {operation}")
             sys.exit(1)
 
-        # Format result nicely
+        # Nicely format result: show integer if no decimal part
         if result == int(result):
             click.echo(int(result))
         else:
