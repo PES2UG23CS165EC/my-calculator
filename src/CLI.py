@@ -7,9 +7,10 @@ import sys
 import click
 from calculator import add, subtract, multiply, divide, power, square_root
 
+
 @click.command()
-@click.argument('operation')
-@click.argument('numbers', type=float, nargs=-1)  # Accept 1 or 2 numbers
+@click.argument("operation")
+@click.argument("numbers", type=float, nargs=-1)  # Accept 1 or 2 numbers
 def calculate(operation, numbers):
     """Simple calculator CLI"""
 
@@ -22,27 +23,27 @@ def calculate(operation, numbers):
         num2 = numbers[1] if len(numbers) > 1 else None
 
         # Perform operation
-        if operation == 'add':
+        if operation == "add":
             if num2 is None:
                 raise ValueError("Addition requires two numbers")
             result = add(num1, num2)
-        elif operation == 'subtract':
+        elif operation == "subtract":
             if num2 is None:
                 raise ValueError("Subtraction requires two numbers")
             result = subtract(num1, num2)
-        elif operation == 'multiply':
+        elif operation == "multiply":
             if num2 is None:
                 raise ValueError("Multiplication requires two numbers")
             result = multiply(num1, num2)
-        elif operation == 'divide':
+        elif operation == "divide":
             if num2 is None:
                 raise ValueError("Division requires two numbers")
             result = divide(num1, num2)
-        elif operation == 'power':
+        elif operation == "power":
             if num2 is None:
                 raise ValueError("Power operation requires two numbers")
             result = power(num1, num2)
-        elif operation == 'square_root':
+        elif operation == "square_root":
             result = square_root(num1)
         else:
             click.echo(f"Unknown operation: {operation}")
@@ -65,5 +66,5 @@ def calculate(operation, numbers):
         sys.exit(1)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     calculate()
