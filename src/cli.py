@@ -13,7 +13,7 @@ from src.calculator import add, subtract, multiply, divide, power, square_root
 @click.argument("operation")
 @click.argument("num1", type=float)
 @click.argument("num2", type=float, required=False)
-def calculate(operation, num1, num2=None):
+def calculate(operation: str, num1: float, num2: float = None) -> None:
     """
     CLI entry point for calculator.
 
@@ -23,7 +23,7 @@ def calculate(operation, num1, num2=None):
         num2 (float, optional): Second number for binary operations
     """
     try:
-        # Map operations to functions that require two arguments
+        # Mapping two-argument operations
         two_arg_ops = {
             "add": add,
             "subtract": subtract,
@@ -45,19 +45,16 @@ def calculate(operation, num1, num2=None):
             click.echo(f"Unknown operation: {operation}")
             sys.exit(1)
 
-        # Print integer if whole number, else 2 decimal places
+        # Format output: integer if whole number, else 2 decimal places
         if isinstance(result, float) and result.is_integer():
             click.echo(int(result))
         else:
             click.echo(f"{result:.2f}" if isinstance(result, float) else result)
 
-    except ValueError as exc:
+    except (ValueError, TypeError) as exc:  # Only catch known exceptions
         click.echo(f"Error: {exc}")
-        sys.exit(1)
-    except Exception as exc:
-        click.echo(f"Unexpected error: {exc}")
         sys.exit(1)
 
 
 if __name__ == "__main__":
-    calculate()
+    calculate()  # pylint: disable=no-value-for-parameter
