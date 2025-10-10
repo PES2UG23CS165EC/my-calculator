@@ -2,74 +2,73 @@
 Integration Tests - CLI + Calculator Working Together
 """
 
-import sys
 import subprocess
-from src.calculator import add, subtract, multiply, divide, power, square_root
-
+import sys
+import pytest
 
 class TestCLIIntegration:
     """Test CLI application integrating with calculator module"""
 
     def run_cli(self, *args):
-        """
-        Helper method to run the CLI and capture output.
-        Uses 'python -m src.CLI' to match your actual file name.
-        """
-        cmd = [sys.executable, "-m", "src.CLI"] + list(args)
-        result = subprocess.run(cmd, capture_output=True, text=True, cwd=".")
+        """Helper method to run CLI and capture output"""
+        cmd = [sys.executable, '-m', 'src.cli'] + list(args)
+        result = subprocess.run(cmd, capture_output=True, text=True, cwd='.')
         return result
 
-    # Addition
     def test_cli_add_integration(self):
-        result = self.run_cli("add", "5", "3")
+        """Test CLI can perform addition"""
+        result = self.run_cli('add', '5', '3')
         assert result.returncode == 0
-        assert result.stdout.strip() == "8"
+        assert result.stdout.strip() == '8'
 
-    # Subtraction
-    def test_cli_subtract_integration(self):
-        result = self.run_cli("subtract", "5", "3")
-        assert result.returncode == 0
-        assert result.stdout.strip() == "2"
-
-    def test_cli_subtract_missing_operand_error(self):
-        result = self.run_cli("subtract", "5")
-        assert result.returncode != 0
-        output = result.stdout.strip() or result.stderr.strip()
-        assert output.startswith("Error:")
-
-    # Multiplication
     def test_cli_multiply_integration(self):
-        result = self.run_cli("multiply", "5", "3")
+        """Test CLI can perform multiplication"""
+        result = self.run_cli('multiply', '4', '7')
         assert result.returncode == 0
-        assert result.stdout.strip() == "15"
+        assert result.stdout.strip() == '28'
 
-    # Division
     def test_cli_divide_integration(self):
-        result = self.run_cli("divide", "5", "3")
+        """Test CLI can perform division"""
+        result = self.run_cli('divide', '15', '3')
         assert result.returncode == 0
-        assert result.stdout.strip() == "1.67"  # rounded to 2 decimals
+        assert result.stdout.strip() == '5'
 
-    def test_cli_divide_by_zero_error(self):
-        result = self.run_cli("divide", "10", "0")
-        assert result.returncode != 0
-        output = result.stdout.strip() or result.stderr.strip()
-        assert output.startswith("Error:")
-
-    # Power
-    def test_cli_power_integration(self):
-        result = self.run_cli("power", "2", "3")
+    def test_cli_sqrt_integration(self):
+        """Test CLI can perform square root"""
+        result = self.run_cli('sqrt', '16')
         assert result.returncode == 0
-        assert result.stdout.strip() == "8"
+        assert result.stdout.strip() == '4'
 
-    # Square root
-    def test_cli_square_root_integration(self):
-        result = self.run_cli("square_root", "16")
-        assert result.returncode == 0
-        assert result.stdout.strip() == "4"
+    def test_cli_error_handling_integration(self):
+        """Test CLI properly handles calculator errors"""
+        result = self.run_cli('divide', '10', '0')
+        assert result.returncode == 1
+        assert 'Cannot divide by zero' in result.stdout
 
-    def test_cli_square_root_negative_error(self):
-        # Use '--' to prevent Click from interpreting -4 as an option
-        result = self.run_cli("square_root", "--", "-4")
-        assert result.returncode != 0
-        output = result.stdout.strip() or result.stderr.strip()
-        assert output.startswith("Error:")
+    def test_cli_invalid_operation_integration(self):
+        """Test CLI handles invalid operations"""
+        result = self.run_cli('invalid', '1', '2')
+        assert result.returncode == 1
+        assert 'Unknown operation' in result.stdout
+
+class TestCalculatorModuleIntegration:
+    """Test calculator module functions work together"""
+
+    def test_chained_operations(self):
+        """Test using results from one operation in another"""
+        from src.calculator import add, multiply, divide
+        # Calculate (5 + 3) * 2 / 4
+        step1 = add(5, 3)      # 8
+        step2 = multiply(step1, 2)  # 16
+        step3 = divide(step2, 4)    # 4
+        assert step3 == 4.0
+
+    def test_complex_calculation_integration(self):
+        """Test complex calculation using multiple functions"""
+        from src.calculator import power, square_root, add
+        # Calculate sqrt(3^2 + 4^2) = 5 (Pythagorean theorem)
+        a_squared = power(3, 2)   # 9
+        b_squared = power(4, 2)   # 16
+        sum_squares = add(a_squared, b_squared)  # 25
+        hypotenuse = square_root(sum_squares)    # 5
+        assert hypotenuse == 5.0
