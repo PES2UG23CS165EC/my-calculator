@@ -5,11 +5,11 @@ Example: python src/cli.py add 5 3
 
 import sys
 import click
-from calculator import add, subtract, multiply, divide, power, square_root
-
+from src.calculator import add, subtract, multiply, divide, power, square_root
 
 # Operations that require two numbers
 TWO_OPERAND_OPS = {"add", "subtract", "multiply", "divide", "power"}
+
 
 @click.command()
 @click.argument("operation")
