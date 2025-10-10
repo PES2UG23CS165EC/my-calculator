@@ -1,6 +1,7 @@
 """
 Command Line Interface for Calculator
-Example: python src/cli.py add 5 3
+Example usage:
+    python src/cli.py add 5 3
 """
 
 import sys
@@ -13,44 +14,41 @@ from src.calculator import add, subtract, multiply, divide, power, square_root
 @click.argument("num1", type=float)
 @click.argument("num2", type=float, required=False)
 def calculate(operation, num1, num2=None):
-    """Simple calculator CLI"""
+    """Simple CLI calculator."""
 
     try:
-        if operation == "add":
+        # Map operations to functions
+        operations_with_two_args = {
+            "add": add,
+            "subtract": subtract,
+            "multiply": multiply,
+            "divide": divide,
+            "power": power,
+        }
+
+        if operation in operations_with_two_args:
             if num2 is None:
-                raise ValueError("Add operation requires two numbers")
-            result = add(num1, num2)
-        elif operation == "subtract":
-            if num2 is None:
-                raise ValueError("Subtract operation requires two numbers")
-            result = subtract(num1, num2)
-        elif operation == "multiply":
-            if num2 is None:
-                raise ValueError("Multiply operation requires two numbers")
-            result = multiply(num1, num2)
-        elif operation == "divide":
-            if num2 is None:
-                raise ValueError("Divide operation requires two numbers")
-            result = divide(num1, num2)
-        elif operation == "power":
-            if num2 is None:
-                raise ValueError("Power operation requires two numbers")
-            result = power(num1, num2)
+                raise ValueError(f"{operation.capitalize()} operation requires two numbers")
+            func = operations_with_two_args[operation]
+            result = func(num1, num2)
+
         elif operation in ("square_root", "sqrt"):
             result = square_root(num1)
+
         else:
             click.echo(f"Unknown operation: {operation}")
             sys.exit(1)
 
-        # Format result nicely
-        if result == int(result):
+        # Output formatting: integer if whole number, otherwise 2 decimal places
+        if isinstance(result, float) and result.is_integer():
             click.echo(int(result))
         else:
-            click.echo(f"{result:.2f}")
+            click.echo(f"{result:.2f}" if isinstance(result, float) else result)
 
     except ValueError as e:
         click.echo(f"Error: {e}")
         sys.exit(1)
+
     except Exception as e:
         click.echo(f"Unexpected error: {e}")
         sys.exit(1)
