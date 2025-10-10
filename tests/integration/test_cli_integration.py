@@ -1,10 +1,9 @@
-"""
-Integration Tests - CLI + Calculator Working Together
-"""
+"""Integration Tests - CLI + Calculator Working Together"""
 
 import subprocess
 import sys
 import pytest
+
 
 class TestCLIIntegration:
     """Test CLI application integrating with calculator module"""
@@ -51,24 +50,29 @@ class TestCLIIntegration:
         assert result.returncode == 1
         assert 'Unknown operation' in result.stdout
 
+
 class TestCalculatorModuleIntegration:
     """Test calculator module functions work together"""
 
     def test_chained_operations(self):
         """Test using results from one operation in another"""
         from src.calculator import add, multiply, divide
-        # Calculate (5 + 3) * 2 / 4
-        step1 = add(5, 3)      # 8
-        step2 = multiply(step1, 2)  # 16
-        step3 = divide(step2, 4)    # 4
+
+        # Calculate (5 + 3) * 2 / 4 = 4
+        step1 = add(5, 3)
+        step2 = multiply(step1, 2)
+        step3 = divide(step2, 4)
+
         assert step3 == 4.0
 
     def test_complex_calculation_integration(self):
         """Test complex calculation using multiple functions"""
         from src.calculator import power, square_root, add
+
         # Calculate sqrt(3^2 + 4^2) = 5 (Pythagorean theorem)
-        a_squared = power(3, 2)   # 9
-        b_squared = power(4, 2)   # 16
-        sum_squares = add(a_squared, b_squared)  # 25
-        hypotenuse = square_root(sum_squares)    # 5
+        a_squared = power(3, 2)
+        b_squared = power(4, 2)
+        sum_squares = add(a_squared, b_squared)
+        hypotenuse = square_root(sum_squares)
+
         assert hypotenuse == 5.0
