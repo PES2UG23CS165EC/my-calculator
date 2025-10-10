@@ -14,11 +14,17 @@ from src.calculator import add, subtract, multiply, divide, power, square_root
 @click.argument("num1", type=float)
 @click.argument("num2", type=float, required=False)
 def calculate(operation, num1, num2=None):
-    """Simple CLI calculator."""
+    """
+    CLI entry point for calculator.
 
+    Args:
+        operation (str): Operation name (add, subtract, multiply, divide, power, sqrt)
+        num1 (float): First number
+        num2 (float, optional): Second number for binary operations
+    """
     try:
-        # Map operations to functions
-        operations_with_two_args = {
+        # Map operations to functions that require two arguments
+        two_arg_ops = {
             "add": add,
             "subtract": subtract,
             "multiply": multiply,
@@ -26,10 +32,10 @@ def calculate(operation, num1, num2=None):
             "power": power,
         }
 
-        if operation in operations_with_two_args:
+        if operation in two_arg_ops:
             if num2 is None:
                 raise ValueError(f"{operation.capitalize()} operation requires two numbers")
-            func = operations_with_two_args[operation]
+            func = two_arg_ops[operation]
             result = func(num1, num2)
 
         elif operation in ("square_root", "sqrt"):
@@ -39,18 +45,17 @@ def calculate(operation, num1, num2=None):
             click.echo(f"Unknown operation: {operation}")
             sys.exit(1)
 
-        # Output formatting: integer if whole number, otherwise 2 decimal places
+        # Print integer if whole number, else 2 decimal places
         if isinstance(result, float) and result.is_integer():
             click.echo(int(result))
         else:
             click.echo(f"{result:.2f}" if isinstance(result, float) else result)
 
-    except ValueError as e:
-        click.echo(f"Error: {e}")
+    except ValueError as exc:
+        click.echo(f"Error: {exc}")
         sys.exit(1)
-
-    except Exception as e:
-        click.echo(f"Unexpected error: {e}")
+    except Exception as exc:
+        click.echo(f"Unexpected error: {exc}")
         sys.exit(1)
 
 
