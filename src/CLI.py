@@ -7,42 +7,42 @@ import sys
 import click
 from src.calculator import add, subtract, multiply, divide, power, square_root
 
-# Operations that require two numbers
-TWO_OPERAND_OPS = {"add", "subtract", "multiply", "divide", "power"}
 
 @click.command()
 @click.argument("operation")
-@click.argument("numbers", type=float, nargs=-1)  # Accept 1 or 2 numbers
-def calculate(operation, numbers):
+@click.argument("num1", type=float)
+@click.argument("num2", type=float, required=False)
+def calculate(operation, num1, num2=None):
     """Simple calculator CLI"""
 
     try:
-        if len(numbers) == 0:
-            click.echo("Error: You must provide at least one number")
-            sys.exit(1)
-
-        num1 = numbers[0]
-        num2 = numbers[1] if len(numbers) > 1 else None
-
-        if operation in TWO_OPERAND_OPS and num2 is None:
-            raise ValueError(f"{operation.capitalize()} operation requires two numbers")
-
         if operation == "add":
+            if num2 is None:
+                raise ValueError("Add operation requires two numbers")
             result = add(num1, num2)
         elif operation == "subtract":
+            if num2 is None:
+                raise ValueError("Subtract operation requires two numbers")
             result = subtract(num1, num2)
         elif operation == "multiply":
+            if num2 is None:
+                raise ValueError("Multiply operation requires two numbers")
             result = multiply(num1, num2)
         elif operation == "divide":
+            if num2 is None:
+                raise ValueError("Divide operation requires two numbers")
             result = divide(num1, num2)
         elif operation == "power":
+            if num2 is None:
+                raise ValueError("Power operation requires two numbers")
             result = power(num1, num2)
-        elif operation == "square_root" or operation == "sqrt":
+        elif operation in ("square_root", "sqrt"):
             result = square_root(num1)
         else:
             click.echo(f"Unknown operation: {operation}")
             sys.exit(1)
 
+        # Format result nicely
         if result == int(result):
             click.echo(int(result))
         else:
@@ -51,12 +51,10 @@ def calculate(operation, numbers):
     except ValueError as e:
         click.echo(f"Error: {e}")
         sys.exit(1)
-    except TypeError as e:
-        click.echo(f"Type Error: {e}")
-        sys.exit(1)
     except Exception as e:
         click.echo(f"Unexpected error: {e}")
         sys.exit(1)
+
 
 if __name__ == "__main__":
     calculate()
